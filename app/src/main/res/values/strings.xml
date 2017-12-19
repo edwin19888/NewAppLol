@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">NewAppLol</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="Main">Main</string>
+    <string name="Search">Search</string>
+    <string name="title_activity_patch">PatchActivity</string>
+    <string name="textButtonSearch">Buscar</string>
+    <string name="textViewSearch">Ingrese Usuario</string>
+    <string name="title_activity_historique">HistoriqueActivity</string>
+</resources>
