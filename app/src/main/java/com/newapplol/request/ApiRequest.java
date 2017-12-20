@@ -15,6 +15,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
@@ -77,5 +80,33 @@ public class ApiRequest {
         void onSuccess(String name, long id);
         void dontExist(String message);
         void onError(String message);
+    }
+
+    public String getJsonFile(Context context, String filename){
+        String json = null;
+
+        try {
+            InputStream is = context.getAssets().open(filename);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
+    public String getChampionName(int champId) throws JSONException {
+        String json = getJsonFile(context,"champion.json");
+
+        JSONObject champ = new JSONObject(json);
+        JSONObject data = champ.getJSONObject("data");
+
+        return null;
+
     }
 }

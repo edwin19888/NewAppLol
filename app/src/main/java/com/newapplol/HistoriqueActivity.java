@@ -17,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.android.volley.RequestQueue;
 import com.newapplol.adapter.MyAdapter;
+import com.newapplol.request.ApiRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +31,16 @@ public class HistoriqueActivity extends AppCompatActivity
     private Long playerId;
     private RecyclerView recyclerViewMatchHistory;
     private MyAdapter myAdapter;
+    private ApiRequest request;
+    private RequestQueue queue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historique);
 
+        queue = MySingleton.getInstance(this).getRequestQueue();
+        request = new ApiRequest(queue,this);
 
 
         Intent intent = getIntent();
@@ -62,15 +68,17 @@ public class HistoriqueActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         //RecyclerView
-
+        /*
         List<String> data =  new ArrayList<>();
         data.add("12/9/13");
+
 
         recyclerViewMatchHistory = (RecyclerView) findViewById(R.id.rv_match);
         recyclerViewMatchHistory.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewMatchHistory.setHasFixedSize(true);
         myAdapter = new MyAdapter(this,data);
         recyclerViewMatchHistory.setAdapter(myAdapter);
+        */
 
     }
 
