@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,18 +17,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.newapplol.adapter.MyAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class HistoriqueActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private String playerName;
     private Long playerId;
-    private TextView textViewM;
+    private RecyclerView recyclerViewMatchHistory;
+    private MyAdapter myAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historique);
 
-        textViewM = (TextView) findViewById(R.id.textMostrar);
+
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -35,10 +44,11 @@ public class HistoriqueActivity extends AppCompatActivity
 
             playerName = extras.getString("NAME");
             playerId = extras.getLong("ID");
-            textViewM.setText(playerName+"/"+ String.valueOf(playerId));
+            setTitle(playerName);
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);        
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
@@ -50,6 +60,18 @@ public class HistoriqueActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        //RecyclerView
+
+        List<String> data =  new ArrayList<>();
+        data.add("12/9/13");
+
+        recyclerViewMatchHistory = (RecyclerView) findViewById(R.id.rv_match);
+        recyclerViewMatchHistory.setLayoutManager(new LinearLayoutManager(this));
+        recyclerViewMatchHistory.setHasFixedSize(true);
+        myAdapter = new MyAdapter(this,data);
+        recyclerViewMatchHistory.setAdapter(myAdapter);
+
     }
 
     @Override

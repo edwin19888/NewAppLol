@@ -22,9 +22,9 @@
 
         <ImageView
             android:src="@drawable/logo_legend"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="50dp"
             android:layout_width="wrap_content"
-            android:layout_height="230dp" />
+            android:layout_height="180dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"

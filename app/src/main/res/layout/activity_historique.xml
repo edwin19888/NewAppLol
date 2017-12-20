@@ -9,23 +9,22 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/app_bar_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        layout="@layout/app_bar_main"/>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/textMostrar"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_match"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:textSize="20dp"
-            android:textAlignment="center"/>
+            android:layout_height="match_parent"
+            android:layout_marginTop="60dp">
+
+
+        </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>
     <android.support.design.widget.NavigationView

@@ -3,6 +3,7 @@ package com.newapplol.request;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,7 +18,7 @@ import org.json.JSONObject;
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
-    private static final String API_KEY= "RGAPI-494fa6ac-76f4-4ce1-b89b-2e36f33bd1ff";
+    private static final String API_KEY= "RGAPI-9318a082-1b31-4379-b799-d640c311c910";
     private String region = "la2";
 
     public ApiRequest(RequestQueue queue,Context context){
@@ -62,8 +63,10 @@ public class ApiRequest {
                     callback.onError("Impossible to the connect");
                 }else if(error instanceof ServerError){
                     callback.onError("Server Error");
+                }else  if(error instanceof AuthFailureError){
+                    callback.onError("Expired Key");
                 }
-                Log.d("APP","ERROR = " + error);
+                Log.d("APP","ERROR FOUND = " + error);
             }
         });
 
