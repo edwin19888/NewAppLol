@@ -1,5 +1,6 @@
 package com.newapplol.request;
 
+import android.app.VoiceInteractor;
 import android.content.Context;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,7 +23,7 @@ import java.io.InputStream;
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
-    private static final String API_KEY= "RGAPI-9318a082-1b31-4379-b799-d640c311c910";
+    private static final String API_KEY= "RGAPI-fdc4f34c-caa5-4de8-b079-0acc4a83dd3e";
     private String region = "la2";
 
     public ApiRequest(RequestQueue queue,Context context){
@@ -105,8 +107,56 @@ public class ApiRequest {
 
         JSONObject champ = new JSONObject(json);
         JSONObject data = champ.getJSONObject("data");
+        JSONObject champInfo = data.getJSONObject(String.valueOf(champId));
+        String champName = champInfo.getString("name");
 
-        return null;
+        return champName;
 
     }
+
+    public String getSummonerName(int spell1Id) throws JSONException{
+        String json = getJsonFile(context,"summoner-spells.json");
+        JSONObject spell = new JSONObject(json);
+        JSONObject data = spell.getJSONObject("data");
+        JSONObject spellInfo = data.getJSONObject(String.valueOf(spell1Id));
+        String spellName = spellInfo.getString("name");
+        return  spellName;
+
+    }
+
+    private void getHistoryMatchLists(long id){
+
+        String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+id+"/recent?api_key="+API_KEY;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if(response.length() > 0){
+                    try {
+                        JSONArray games = response.getJSONArray("matches");
+
+                        for (int i = 0; i < games.length();i++){
+                            JSONObject oneMatch = games.getJSONObject(i);
+                            long matchId = oneMatch.getLong("gameId");
+                            int champId = oneMatch.getInt("champion");
+                        }
+
+                    } catch (JSONException e) {
+                        Log.d("APP:","EXCEPTION HISTORY = " + e);
+                        e.printStackTrace();
+                    }
+                }else {
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+
+    }
+
 }

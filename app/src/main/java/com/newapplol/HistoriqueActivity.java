@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -42,6 +43,8 @@ public class HistoriqueActivity extends AppCompatActivity
         queue = MySingleton.getInstance(this).getRequestQueue();
         request = new ApiRequest(queue,this);
 
+        String json = request.getJsonFile(this,"champion.json");
+        Log.d("APP : ",json);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
