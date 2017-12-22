@@ -23,7 +23,7 @@ import java.io.InputStream;
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
-    private static final String API_KEY= "RGAPI-fdc4f34c-caa5-4de8-b079-0acc4a83dd3e";
+    private static final String API_KEY= "";
     private String region = "la2";
 
     public ApiRequest(RequestQueue queue,Context context){
