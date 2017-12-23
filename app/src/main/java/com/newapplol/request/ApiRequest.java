@@ -19,11 +19,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
-    private static final String API_KEY= "";
+    private static final String API_KEY= "RGAPI-fdc4f34c-caa5-4de8-b079-0acc4a83dd3e";
     private String region = "la2";
 
     public ApiRequest(RequestQueue queue,Context context){
@@ -124,9 +126,11 @@ public class ApiRequest {
 
     }
 
-    private void getHistoryMatchLists(long id){
+    private ArrayList<Long> getHistoryMatchListsByAccountId(long accountId){
 
-        String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+id+"/recent?api_key="+API_KEY;
+        String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accountId+"/recent?api_key="+API_KEY;
+
+        final ArrayList<Long> matches = new ArrayList<>();
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
             @Override
@@ -138,7 +142,7 @@ public class ApiRequest {
                         for (int i = 0; i < games.length();i++){
                             JSONObject oneMatch = games.getJSONObject(i);
                             long matchId = oneMatch.getLong("gameId");
-                            int champId = oneMatch.getInt("champion");
+                            matches.add(matchId);
                         }
 
                     } catch (JSONException e) {
@@ -156,7 +160,46 @@ public class ApiRequest {
 
             }
         });
+        return matches;
+    }
 
+    public void getHistoryMatchListsByMatchId(long matchId){
+        String url = "https://"+region+".api.riotgames.com/lol/match/v3/matches/"+matchId+"?api_key="+API_KEY;
+        final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                List<Integer> teamWinners = new ArrayList<>();
+                List<Integer> teamLossers = new ArrayList<>();
+                
+
+                if (response.length() > 0){
+                    try {
+                        long gameId = response.getLong("gameId");
+                        long gameCreation = response.getLong("gameCreation");
+                        long gameDuration = response.getLong("gameDuration");
+                        String gameMode = response.getString("gameMode");
+                        JSONArray teams = response.getJSONArray("teams");
+                        for(int j=0;j<teams.length();j++){
+                            JSONObject oneteam = teams.getJSONObject(j);
+                            String resultteam = oneteam.getString("win");
+                            int teamId = oneteam.getInt("teamId");
+
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
     }
 
 }
