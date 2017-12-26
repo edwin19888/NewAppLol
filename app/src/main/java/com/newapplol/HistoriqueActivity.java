@@ -43,8 +43,9 @@ public class HistoriqueActivity extends AppCompatActivity
         queue = MySingleton.getInstance(this).getRequestQueue();
         request = new ApiRequest(queue,this);
 
-        String json = request.getJsonFile(this,"champion.json");
+        String json = request.getJsonFile(this,"match-example.json");
         Log.d("APP : ",json);
+
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -55,7 +56,6 @@ public class HistoriqueActivity extends AppCompatActivity
             playerId = extras.getLong("ID");
             setTitle(playerName);
         }
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
