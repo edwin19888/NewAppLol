@@ -27,7 +27,7 @@ import java.util.List;
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
-    private static final String API_KEY= "";
+    private static final String API_KEY= "RGAPI-a8750dbc-b57c-4a3c-b13d-8d0e05c36503";
     private String region = "la2";
     ArrayList<Long> matches;
 
@@ -127,15 +127,16 @@ public class ApiRequest {
 
     }
 
-    public ArrayList<Long> getHistoryMatchListsByAccountId(long accountId){
+    public void getHistoryMatchListsByAccountId(long accountId, final HistoryMatchListsByAccountIdCallback callback){
 
         String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accountId+"/recent?api_key="+API_KEY;
 
-        final ArrayList<Long> matches = new ArrayList<>();
+        final List<Long> matches = new ArrayList<Long>();
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.e("Response", response+" fin");
                 if(response.length() > 0){
                     try {
                         JSONArray games = response.getJSONArray("matches");
@@ -145,30 +146,45 @@ public class ApiRequest {
                             long matchId = oneMatch.getLong("gameId");
                             matches.add(matchId);
                         }
+                        callback.onSuccess(matches);
 
                     } catch (JSONException e) {
-                        Log.d("APP:","EXCEPTION HISTORY = " + e);
+                        Log.d("APP:","EXCEPTION HISTORY 1 = " + e);
                         e.printStackTrace();
                     }
                 }else {
-
+                    callback.noMatch("No found match for player");
                 }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                if(error instanceof NetworkError){
+                    callback.onError("Impossible to the connect");
+                }else if(error instanceof ServerError){
+                    callback.onError("Server Error");
+                }else  if(error instanceof AuthFailureError){
+                    callback.onError("Expired Key");
+                }
+                Log.d("APP","ERROR FOUND = " + error.getMessage());
             }
         });
         queue.add(request);
-        return matches;
+
+    }
+
+    public interface HistoryMatchListsByAccountIdCallback{
+        void onSuccess(List<Long> matches);
+        void onError(String message);
+        void noMatch(String message);
     }
 
     public void getHistoryMatchListsByMatchId(long matchId, final long id, final HistoryCallback callback) {
 
             String url = "https://"+region+".api.riotgames.com/lol/match/v3/matches/"+ matchId +"?api_key="+API_KEY;
-            final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
+            Log.d("url=",url);
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
 
@@ -222,6 +238,7 @@ public class ApiRequest {
                                     teamId = participant.getInt("teamId");
                                     sum1 = participant.getInt("spell1Id");
                                     sum2 = participant.getInt("spell2Id");
+                                    champId = participant.getInt("championId");
 
                                     JSONObject stats = participant.getJSONObject("stats");
                                     for(int k = 0; k < 7; k++){
@@ -291,12 +308,12 @@ public class ApiRequest {
                             String sum2Name = getSummonerName(sum2);
 
                             MatchEntity singleMatch = new MatchEntity(participantId,win,matchId,matchCreation,matchDuration,champId,kills,deaths,assists,gold,cs,champLevel,items,sum1Name,sum2Name,champName,typeMatch,teamWinners,teamLossers);
-
+                            historyMatches.add(singleMatch);
                             callback.onSuccess(historyMatches);
 
 
                         } catch (JSONException e) {
-                            Log.d("APP:","EXEPTION HISTORY = " + e);
+                            Log.d("APP:","EXEPTION HISTORY  2 = " + e);
                             e.printStackTrace();
                         }
                     }else{
@@ -316,13 +333,14 @@ public class ApiRequest {
                     Log.d("APP","ERROR FOUND = " + error);
 
                 }
+
             });
 
             queue.add(request);
     }
 
     public interface HistoryCallback{
-        void onSuccess(List<MatchEntity> matches);
+        void onSuccess(List<MatchEntity> matchesResult);
         void onError(String message);
         void noMatch(String message);
     }
@@ -477,39 +495,5 @@ public class ApiRequest {
 
     }
 
-    public void getHistoryMatchListsByAccountIdDemo(long accountId){
-
-        String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accountId+"/recent?api_key="+API_KEY;
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                if(response.length() > 0){
-                    try {
-                        JSONArray games = response.getJSONArray("matches");
-
-                        for (int i = 0; i < games.length();i++){
-                            JSONObject oneMatch = games.getJSONObject(i);
-                            long matchId = oneMatch.getLong("gameId");
-                            //matches.add(matchId);
-                        }
-
-                    } catch (JSONException e) {
-                        Log.d("APP:","EXCEPTION HISTORY = " + e);
-                        e.printStackTrace();
-                    }
-                }else {
-
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        queue.add(request);
-    }
 
 }

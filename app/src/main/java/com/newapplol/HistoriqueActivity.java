@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
 import com.newapplol.adapter.MyAdapter;
+import com.newapplol.entity.MatchEntity;
 import com.newapplol.request.ApiRequest;
 
 import java.util.ArrayList;
@@ -69,7 +70,46 @@ public class HistoriqueActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        request.getHistoryMatchListsByAccountIdDemo(accountId);
+        request.getHistoryMatchListsByAccountId(accountId, new ApiRequest.HistoryMatchListsByAccountIdCallback() {
+            @Override
+            public void onSuccess(List<Long> matches) {
+                Log.d("APP","MATCH = " + matches.toString());
+                List<Long> totalmatches = matches;
+                if(totalmatches.size() > 0){
+                    request.getHistoryMatchListsByMatchId(totalmatches.get(0), playerId, new ApiRequest.HistoryCallback() {
+                        @Override
+                        public void onSuccess(List<MatchEntity> matchesResult) {
+                            Log.d("APP","MATCH = " + matchesResult.toString());
+                        }
+
+                        @Override
+                        public void onError(String message) {
+
+                        }
+
+                        @Override
+                        public void noMatch(String message) {
+
+                        }
+                    });
+                }else{
+                    Log.d("totalmatches : ","Json no devolviop datos");
+                }
+
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+
+            @Override
+            public void noMatch(String message) {
+
+            }
+        });
+
+
         String stop = "STOP";
         //RecyclerView
         /*
