@@ -29,11 +29,12 @@ public class HistoriqueActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private String playerName;
-    private Long playerId;
+    private Long playerId, accountId;
     private RecyclerView recyclerViewMatchHistory;
     private MyAdapter myAdapter;
     private ApiRequest request;
     private RequestQueue queue;
+    private ArrayList<Long> matches;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,17 +44,14 @@ public class HistoriqueActivity extends AppCompatActivity
         queue = MySingleton.getInstance(this).getRequestQueue();
         request = new ApiRequest(queue,this);
 
-        String json = request.getJsonFile(this,"match-example.json");
-        Log.d("APP : ",json);
-
-
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
 
-        if(extras.getString("NAME") != null && extras.getLong("ID") > 0){
+        if(extras.getString("NAME") != null && extras.getLong("ID") > 0 && extras.getLong("ACCOUNTID") > 0){
 
             playerName = extras.getString("NAME");
             playerId = extras.getLong("ID");
+            accountId = extras.getLong("ACCOUNTID");
             setTitle(playerName);
         }
 
@@ -70,6 +68,9 @@ public class HistoriqueActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        request.getHistoryMatchListsByAccountIdDemo(accountId);
+        String stop = "STOP";
         //RecyclerView
         /*
         List<String> data =  new ArrayList<>();

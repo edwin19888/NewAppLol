@@ -27,8 +27,9 @@ import java.util.List;
 public class ApiRequest {
     private RequestQueue queue;
     private Context context;
-    private static final String API_KEY= "RGAPI-cb17e7e0-dae7-45d0-8b17-b85266467112";
+    private static final String API_KEY= "";
     private String region = "la2";
+    ArrayList<Long> matches;
 
     public ApiRequest(RequestQueue queue,Context context){
         this.queue = queue;
@@ -46,6 +47,7 @@ public class ApiRequest {
 
                     String name = response.getString("name");
                     Long id = response.getLong("id");
+                    Long accountId = response.getLong("accountId");
 
                     /* Api Old
                     JSONObject json = response.getJSONObject("name");
@@ -54,10 +56,7 @@ public class ApiRequest {
                     */
                     // String summonername = "xTH3BR4x";
                     //Long id = Long.valueOf(11110132);
-
-
-
-                    callback.onSuccess(name,id);
+                    callback.onSuccess(name,id,accountId);
 
                 } catch (JSONException e) {
                     Log.d("APP", "EXCEPTION = " + e);
@@ -83,7 +82,7 @@ public class ApiRequest {
     }
 
     public interface CheckPlayerCallback{
-        void onSuccess(String name, long id);
+        void onSuccess(String name, long id, long accountId);
         void dontExist(String message);
         void onError(String message);
     }
@@ -128,7 +127,7 @@ public class ApiRequest {
 
     }
 
-    private ArrayList<Long> getHistoryMatchListsByAccountId(long accountId){
+    public ArrayList<Long> getHistoryMatchListsByAccountId(long accountId){
 
         String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accountId+"/recent?api_key="+API_KEY;
 
@@ -162,14 +161,13 @@ public class ApiRequest {
 
             }
         });
+        queue.add(request);
         return matches;
     }
 
-    public void getHistoryMatchListsByMatchId(ArrayList<Long> matches, final long id, final HistoryCallback callback) {
+    public void getHistoryMatchListsByMatchId(long matchId, final long id, final HistoryCallback callback) {
 
-        for (int i = 0; i < matches.size();i++){
-
-            String url = "https://"+region+".api.riotgames.com/lol/match/v3/matches/"+matches.get(i)+"?api_key="+API_KEY;
+            String url = "https://"+region+".api.riotgames.com/lol/match/v3/matches/"+ matchId +"?api_key="+API_KEY;
             final JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
@@ -294,18 +292,15 @@ public class ApiRequest {
 
                             MatchEntity singleMatch = new MatchEntity(participantId,win,matchId,matchCreation,matchDuration,champId,kills,deaths,assists,gold,cs,champLevel,items,sum1Name,sum2Name,champName,typeMatch,teamWinners,teamLossers);
 
-                            historyMatches.add(singleMatch);
-                            items = new Integer[7];
-                            teamWinners = new ArrayList<>();
-
                             callback.onSuccess(historyMatches);
 
 
                         } catch (JSONException e) {
+                            Log.d("APP:","EXEPTION HISTORY = " + e);
                             e.printStackTrace();
                         }
                     }else{
-                        callback.noMatch("No found matches");
+                        callback.noMatch("No found match");
                     }
                 }
             }, new Response.ErrorListener() {
@@ -323,10 +318,7 @@ public class ApiRequest {
                 }
             });
 
-
-        }
-
-
+            queue.add(request);
     }
 
     public interface HistoryCallback{
@@ -483,6 +475,41 @@ public class ApiRequest {
 
 
 
+    }
+
+    public void getHistoryMatchListsByAccountIdDemo(long accountId){
+
+        String url = "https://"+region+".api.riotgames.com/lol/match/v3/matchlists/by-account/"+accountId+"/recent?api_key="+API_KEY;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                if(response.length() > 0){
+                    try {
+                        JSONArray games = response.getJSONArray("matches");
+
+                        for (int i = 0; i < games.length();i++){
+                            JSONObject oneMatch = games.getJSONObject(i);
+                            long matchId = oneMatch.getLong("gameId");
+                            //matches.add(matchId);
+                        }
+
+                    } catch (JSONException e) {
+                        Log.d("APP:","EXCEPTION HISTORY = " + e);
+                        e.printStackTrace();
+                    }
+                }else {
+
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        queue.add(request);
     }
 
 }

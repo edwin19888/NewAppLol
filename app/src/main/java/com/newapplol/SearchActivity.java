@@ -80,13 +80,14 @@ public class SearchActivity extends AppCompatActivity
                         public void run() {
                             request.checkPlayerName(summonername,new ApiRequest.CheckPlayerCallback() {
                                 @Override
-                                public void onSuccess(String name, long id) {
+                                public void onSuccess(String name, long id, long accountId) {
 
                                     pbLoader.setVisibility(View.INVISIBLE);
                                     Intent intent = new Intent(SearchActivity.this,HistoriqueActivity.class);
                                     Bundle extras = new Bundle();
                                     extras.putString("NAME",name);
                                     extras.putLong("ID",id);
+                                    extras.putLong("ACCOUNTID",accountId);
                                     intent.putExtras(extras);
                                     startActivity(intent);
                                 }
